@@ -1,6 +1,5 @@
 import random
 import itertools
-import numpy
 
 NB_COLUMNS = 5
 NB_ROWS = 3
@@ -12,25 +11,48 @@ class Game:
         self.grid = grid
 
     def init(self, bomb_percentage):
-        for i in range(self.grid.nb_rows):
-            for j in range(self.grid.nb_columns):
-                if random.randint(0, 100) < bomb_percentage:
-                    self.grid[i][j].bomb = True
-                    for square in self.grid.neighbor_squares(i, j):
-                        square.nb += 1
+        Grid.sample(self, 20)
+        # for i in range(self.grid.nb_rows):
+            # for j in range(self.grid.nb_columns):
+                # if random.randint(0, 100) < bomb_percentage:
+                    # self.grid[i][j].bomb = True
+        for square in self.grid.neighbor_squares(i, j):
+            square.nb += 1
+
+
+class Row:
+    def __init__(self, nb):
+        self.__row = [Square() for _ in range(nb)]
+
+    def __repr__(self):
+        return self.__row.__repr__()
+
+    def __getitem__(self, j):
+        return self.__row[j]
 
 
 class Grid:
     def __init__(self, nb_columns, nb_rows):
         self.nb_columns = nb_columns
         self.nb_rows = nb_rows
-        self.__grid = numpy.full((nb_rows, nb_columns), Square())
+        self.__grid = [Row(nb_columns) for _ in range(nb_rows)]
 
     def __repr__(self):
         return f'{self.nb_columns}x{self.nb_rows} grid'
 
     def __getitem__(self, i):
         return self.__grid[i]
+
+    def sample(self, nb_cases):
+        i = []
+        x = 0
+        for row in self.grid:
+            i.append(row)
+        while x <= nb_cases:
+            j = random.sample(i, 1)
+            k = random.sample(j, 1)
+            self.grid[j][k].bomb = True
+            x = x + 1
 
     def neighbor_squares(self, i, j):
         neighboring_squares = itertools.product(range(j-1, j+2),
