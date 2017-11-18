@@ -1,4 +1,5 @@
 import random
+import itertools
 
 NB_COLUMNS = 5
 NB_ROWS = 3
@@ -10,11 +11,11 @@ class Game:
         self.grid = grid
 
     def init(self, bomb_percentage):
-        for i in self.grid.nb_rows:
-            for j in self.grid.nb_columns:
+        for i in range(self.grid.nb_rows):
+            for j in range(self.grid.nb_columns):
                 if random.randint(0, 100) < bomb_percentage:
                     self.grid[i][j].bomb = True
-                    for square in grid.neighbor_squares(i, j):
+                    for square in self.grid.neighbor_squares(i, j):
                         square.nb += 1
 
 
@@ -42,7 +43,14 @@ class Grid:
         return self.__grid[i]
 
     def neighbor_squares(self, i, j):
-        pass
+        neighboring_squares = itertools.product(range(j-1, j+2),
+                                                range(i-1, i+2))
+        for tup in neighboring_squares:
+            if tup != (j, i):
+                try:
+                    yield self[tup[0]][tup[1]]
+                except IndexError:
+                    pass
 
 
 class Square:
