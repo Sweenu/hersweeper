@@ -1,5 +1,6 @@
 import random
 import itertools
+import numpy
 
 NB_COLUMNS = 5
 NB_ROWS = 3
@@ -19,22 +20,11 @@ class Game:
                         square.nb += 1
 
 
-class Row:
-    def __init__(self, nb):
-        self.__row = [Square() for _ in range(nb)]
-
-    def __repr__(self):
-        return self.__row.__repr__()
-
-    def __getitem__(self, j):
-        return self.__row[j]
-
-
 class Grid:
     def __init__(self, nb_columns, nb_rows):
         self.nb_columns = nb_columns
         self.nb_rows = nb_rows
-        self.__grid = [Row(nb_columns) for _ in range(nb_rows)]
+        self.__grid = numpy.full((nb_rows, nb_columns), Square())
 
     def __repr__(self):
         return f'{self.nb_columns}x{self.nb_rows} grid'
