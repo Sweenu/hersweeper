@@ -2,7 +2,7 @@ import random
 import itertools
 
 NB_COLS = 5
-NB_ROWS = 3
+NB_ROWS = 5
 BOMB_PERCENTAGE = 20
 
 
@@ -39,7 +39,15 @@ class Grid:
         self.__grid = [Row(nb_cols, col_nb=i) for i in range(nb_rows)]
 
     def __repr__(self):
-        return f'{self.nb_cols}x{self.nb_rows} grid'
+        i = "\n"
+        for row in range(self.nb_rows):
+            for col in range(self.nb_cols):
+                if col == self.nb_cols-1:
+                    i = i + "| 0 |"
+                    i = i + "\n"
+                else:
+                    i = i + "| 0 "
+        return i
 
     def __getitem__(self, y):
         return self.__grid[y]
@@ -88,6 +96,7 @@ def main():
     grid = Grid(NB_COLS, NB_ROWS)
     game = Game(grid)
     game.init(BOMB_PERCENTAGE)
+    print(grid)
 
 
 if __name__ == '__main__':
