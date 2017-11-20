@@ -21,11 +21,16 @@ class Game:
 
 
 class Row:
-    def __init__(self, nb, col_nb):
-        self.__row = [Square(x=i, y=col_nb) for i in range(nb)]
+    def __init__(self, nb_cols, row_nb):
+        self.__row = [Square(x=i, y=row_nb) for i in range(nb_cols)]
 
-    def __repr__(self):
-        return self.__row.__repr__()
+    def __str__(self):
+        row = ''
+        for square in self:
+            row += f'| {str(square)} '
+
+        row += '|'
+        return row
 
     def __getitem__(self, x):
         return self.__row[x]
@@ -36,18 +41,14 @@ class Grid:
         self.nb_cols = nb_cols
         self.nb_rows = nb_rows
 
-        self.__grid = [Row(nb_cols, col_nb=i) for i in range(nb_rows)]
+        self.__grid = [Row(nb_cols, i) for i in range(nb_rows)]
 
-    def __repr__(self):
-        i = "\n"
-        for row in range(self.nb_rows):
-            for col in range(self.nb_cols):
-                if col == self.nb_cols-1:
-                    i = i + "| 0 |"
-                    i = i + "\n"
-                else:
-                    i = i + "| 0 "
-        return i
+    def __str__(self):
+        grid = ''
+        for row in self:
+            grid += str(row) + '\n'
+
+        return grid
 
     def __getitem__(self, y):
         return self.__grid[y]
@@ -83,20 +84,22 @@ class Square:
         self.flag = flag
         self.nb = nb_neighbor_bomb
 
-    def __repr__(self):
+    def __str__(self):
         if self.bomb:
             return 'B'
+            # return u'\U0001F4A3'
         elif self.flag:
             return 'F'
+            # return u'\u2691'
         else:
             return str(self.nb)
 
 
 def main():
-    grid = Grid(NB_COLS, NB_ROWS)
-    game = Game(grid)
+    game = Game(Grid(NB_COLS, NB_ROWS))
+    print(game.grid)
     game.init(BOMB_PERCENTAGE)
-    print(grid)
+    print(game.grid)
 
 
 if __name__ == '__main__':
