@@ -19,6 +19,9 @@ class Game:
             for square in self.grid.neighbor_squares(square):
                 square.nb += 1
 
+    def __str__(self):
+        return f'{self.grid.nb_cols}x{self.grid.nb_rows}'
+
 
 class Row:
     def __init__(self, nb_cols, row_nb):
@@ -77,7 +80,8 @@ class Grid:
 
 
 class Square:
-    def __init__(self, x, y, nb_neighbor_bomb=0, bomb=False, flag=False):
+    def __init__(self, x, y, nb_neighbor_bomb=0,
+                 bomb=False, flag=False, revealed=False):
         self.x = x
         self.y = y
         self.bomb = bomb
@@ -92,7 +96,7 @@ class Square:
             return 'F'
             # return u'\u2691'
         else:
-            return str(self.nb)
+            return str(self.nb) if self.nb != 0 else ' '
 
 
 def main():
