@@ -1,18 +1,20 @@
+import re
 import random
 import itertools
 
-NB_COLS = 5
-NB_ROWS = 5
-BOMB_PERCENTAGE = 20
+EASY = 10
+NORMAL = 20
+HARD = 30
 
 
 class Game:
-    def __init__(self, grid):
+    def __init__(self, grid, bomb_percentage):
         self.grid = grid
+        self.bomb_percentage = bomb_percentage
 
-    def init(self, bomb_percentage):
+    def init(self):
         nb_squares = self.grid.nb_cols * self.grid.nb_rows
-        nb_bombs = round((nb_squares * bomb_percentage) / 100)
+        nb_bombs = round((nb_squares * self.bomb_percentage) / 100)
         for square in self.grid.sample(nb_bombs):
             square.bomb = True
 
@@ -20,7 +22,8 @@ class Game:
                 square.nb += 1
 
     def __str__(self):
-        return f'{self.grid.nb_cols}x{self.grid.nb_rows}'
+        return (f'Grid: {self.grid.nb_cols}x{self.grid.nb_rows}\n'
+                f'Bomb percentage: {self.bomb_percentatge}')
 
 
 class Row:
@@ -100,9 +103,23 @@ class Square:
 
 
 def main():
-    game = Game(Grid(NB_COLS, NB_ROWS))
-    print(game.grid)
-    game.init(BOMB_PERCENTAGE)
+    prompt = '--> '
+
+    print('Size of grid (in the form <cols>x<rows>) [7x10]')
+    size = re.match(r'(\d+)x(\d+)', input(prompt) or '7x10')
+
+    print('Difficulty of the game (easy, normal or hard) [normal]')
+    difficulty = input(prompt) or 'normal'
+    if difficulty == 'easy':
+        bomb_percentage = EASY
+    elif difficulty == 'hard':
+        bomb_percentage = HARD
+    else:
+        bomb_percentage = NORMAL
+
+    game = Game(Grid(int(size.group(1)), int(size.group(2))), bomb_percentage)
+    game.init()
+
     print(game.grid)
 
 
