@@ -92,16 +92,15 @@ class Cell:
         self.is_bomb = is_bomb
         self.is_flagged = is_flagged
         self.nb = nb_neighbor_bombs
+        self.is_revealed = is_revealed
 
     def __str__(self):
         if self.is_bomb:
             return 'B'
-            # return u'\U0001F4A3'
         elif self.is_flagged:
             return 'F'
-            # return u'\u2691'
         else:
-            return str(self.nb) if self.nb != 0 else ' '
+            return str(self.nb) if self.nb else ' '
 
 
 def main():

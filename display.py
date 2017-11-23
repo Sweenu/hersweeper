@@ -1,10 +1,24 @@
-import urwid as u
+import urwid
 
-def setup_grid(grid):
-    display = []
+BOMB = u'\U0001F4A3'
+FLAG = u'\u2691'
+
+
+def grid_into_widget(grid):
+    rows = []
     for row in grid:
-        display.append(row)
+        cells = []
+        for cell in row:
+            text = str(cell.nb) if cell.is_revealed else ' '
+            if cell.is_flagged:
+                text = FLAG
 
-    #width = int((loop.screen.get_cols_rows()[0] - 2) / 3)
-    return u.GridFlow(display, 8, 1, 1, "left")
+            cells.append(urwid.Text(text))
 
+        rows.append(cells)
+
+    return rows
+
+# lbox = urwid.ListBox(rows)
+
+# loop = urwid.MainLoop(lbox)
