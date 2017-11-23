@@ -2,6 +2,8 @@ import re
 import random
 import itertools
 
+import urwid
+
 EASY = 10
 NORMAL = 20
 HARD = 30
@@ -13,13 +15,13 @@ class Game:
         self.bomb_percentage = bomb_percentage
 
     def init(self):
-        nb_squares = self.grid.nb_cols * self.grid.nb_rows
-        nb_bombs = round((nb_squares * self.bomb_percentage) / 100)
-        for square in self.grid.sample(nb_bombs):
-            square.bomb = True
+        nb_cells = self.grid.nb_cols * self.grid.nb_rows
+        nb_bombs = round((nb_cells * self.bomb_percentage) / 100)
+        for cell in self.grid.sample(nb_bombs):
+            cell.is_bomb = True
 
-            for square in self.grid.neighbor_squares(square):
-                square.nb += 1
+            for cell in self.grid.neighbor_cells(cell):
+                cell.nb += 1
 
     def __str__(self):
         return (f'Grid: {self.grid.nb_cols}x{self.grid.nb_rows}\n'
@@ -28,12 +30,12 @@ class Game:
 
 class Row:
     def __init__(self, nb_cols, row_nb):
-        self.__row = [Square(x=i, y=row_nb) for i in range(nb_cols)]
+        self.__row = [Cell(x=i, y=row_nb) for i in range(nb_cols)]
 
     def __str__(self):
         row = ''
-        for square in self:
-            row += f'| {str(square)} '
+        for cell in self:
+            row += f'| {str(cell)} '
 
         row += '|'
         return row
@@ -59,43 +61,43 @@ class Grid:
     def __getitem__(self, y):
         return self.__grid[y]
 
-    def sample(self, nb_squares):
-        squares = set()
-        while len(squares) < nb_squares:
+    def sample(self, nb_cells):
+        cells = set()
+        while len(cells) < nb_cells:
             y = random.randint(0, self.nb_rows - 1)
             x = random.randint(0, self.nb_cols - 1)
-            square = self[y][x]
-            # no need to test if the square is already in the set. A set can
+            cell = self[y][x]
+            # no need to test if the cell is already in the set. A set can
             # only hold one copy of an element by nature
-            squares.add(square)
+            cells.add(cell)
 
-        return squares
+        return cells
 
-    def neighbor_squares(self, square):
-        neighboring_squares = itertools.product(range(square.x-1, square.x+2),
-                                                range(square.y-1, square.y+2))
-        for tup in neighboring_squares:
-            if tup != (square.x, square.y):
+    def neighbor_cells(self, cell):
+        neighboring_cells = itertools.product(range(cell.x-1, cell.x+2),
+                                                range(cell.y-1, cell.y+2))
+        for tup in neighboring_cells:
+            if tup != (cell.x, cell.y):
                 try:
                     yield self[tup[1]][tup[0]]
                 except IndexError:
                     pass
 
 
-class Square:
-    def __init__(self, x, y, nb_neighbor_bomb=0,
-                 bomb=False, flag=False, revealed=False):
+class Cell:
+    def __init__(self, x, y, nb_neighbor_bombs=0,
+                 is_bomb=False, is_flagged=False, is_revealed=False):
         self.x = x
         self.y = y
-        self.bomb = bomb
-        self.flag = flag
-        self.nb = nb_neighbor_bomb
+        self.is_bomb = is_bomb
+        self.is_flagged = is_flagged
+        self.nb = nb_neighbor_bombs
 
     def __str__(self):
-        if self.bomb:
+        if self.is_bomb:
             return 'B'
             # return u'\U0001F4A3'
-        elif self.flag:
+        elif self.is_flagged:
             return 'F'
             # return u'\u2691'
         else:
