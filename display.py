@@ -15,10 +15,9 @@ def grid_into_widget(grid):
 
             cells.append(urwid.Text(text))
 
-        rows.append(cells)
+        rows.append(urwid.Columns(cells))
 
     return rows
 
-# lbox = urwid.ListBox(rows)
-
-# loop = urwid.MainLoop(lbox)
+lbox = urwid.ListBox()
+loop = urwid.MainLoop()
