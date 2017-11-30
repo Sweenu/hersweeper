@@ -2,11 +2,14 @@ import re
 import random
 import itertools
 
-import urwid
+import tabulate
+tabulate.PRESERVE_WHITESPACE = True
 
 EASY = 10
 NORMAL = 20
 HARD = 30
+BOMB = u'\U0001F4A3'
+FLAG = u'\u2691'
 
 
 class Game:
@@ -75,7 +78,7 @@ class Grid:
 
     def neighbor_cells(self, cell):
         neighboring_cells = itertools.product(range(cell.x-1, cell.x+2),
-                                                range(cell.y-1, cell.y+2))
+                                              range(cell.y-1, cell.y+2))
         for tup in neighboring_cells:
             if tup != (cell.x, cell.y):
                 try:
@@ -95,12 +98,10 @@ class Cell:
         self.is_revealed = is_revealed
 
     def __str__(self):
-        if self.is_bomb:
-            return 'B'
-        elif self.is_flagged:
-            return 'F'
+        if self.is_flagged:
+            return FLAG
         else:
-            return str(self.nb) if self.nb else ' '
+            return str(self.nb) if self.is_revealed else ' '
 
 
 def main():
@@ -121,7 +122,7 @@ def main():
     game = Game(Grid(int(size.group(1)), int(size.group(2))), bomb_percentage)
     game.init()
 
-    print(game.grid)
+    print(tabulate.tabulate(game.grid, tablefmt='fancy_grid'))
 
 
 if __name__ == '__main__':

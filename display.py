@@ -1,7 +1,5 @@
 import urwid
 
-BOMB = u'\U0001F4A3'
-FLAG = u'\u2691'
 
 
 def grid_into_widget(grid):
