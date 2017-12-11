@@ -78,7 +78,7 @@ class Grid:
 
         return cells
 
-    def neighbor_cells(self, cell, nb):
+    def neighbor_cells(self, cell):
         neighboring_cells = itertools.product(range(cell.x - 1, cell.x + 2),
                                               range(cell.y - 1, cell.y + 2))
         for tup in neighboring_cells:

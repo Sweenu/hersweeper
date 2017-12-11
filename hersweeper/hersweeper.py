@@ -1,8 +1,11 @@
+#!/usr/bin/env python
 import re
+import os
 
 import click
 
-from hersweeper import core
+import core
+from util import to_number
 
 EASY = 10
 NORMAL = 20
@@ -30,15 +33,31 @@ class CommandLine:
         self.game = core.Game(grid, bomb_percentage)
         self.game.init()
 
+    @staticmethod
+    def _process_input(move):
+        raw_x = ''.join([char for char in move if char.isalpha()])
+        raw_y = ''.join([char for char in move if char.isdigit()])
+        return to_number(raw_x), int(raw_y) - 1
+
     def run(self):
         while True:
+            print(self.game.grid)
             print("What's your next move? (h for help)")
-            input(self.prompt)
-            
+            user_input = input(self.prompt)
+            if user_input in ('h', 'help'):
+                self.print_help()
+            elif user_input in ('quit', 'exit'):
+                os.exit(0)
+            else:
+                try:
+                    x, y = self._process_input(user_input)
+                except ValueError as e:
+                    print(e.args[0])
+            self.game.grid[x][y].is_revealed = True
 
 
 @click.command()
-@click.command('--graphic', '-g', is_flag=True,
+@click.option('--graphic', '-g', is_flag=True,
                help='Run the game in terminal graphic mode')
 def main(graphic):
     if graphic:
