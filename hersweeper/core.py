@@ -29,6 +29,13 @@ class Game:
         return (f'Grid: {self.grid.nb_cols}x{self.grid.nb_rows}\n'
                 f'Bomb percentage: {self.bomb_percentatge}')
 
+    def propagate(self, cell):
+        neighbors = self.grid.neighbor_cells(cell)
+        for neighbor in neighbors:
+            if neighbor.nb == 0:
+                neighbor.is_revealed = True
+                self.propagate(neighbor)
+
 
 class Row:
     def __init__(self, nb_cols, row_nb):
@@ -71,9 +78,9 @@ class Grid:
 
         return cells
 
-    def neighbor_cells(self, cell):
-        neighboring_cells = itertools.product(range(cell.x-1, cell.x+2),
-                                              range(cell.y-1, cell.y+2))
+    def neighbor_cells(self, cell, nb):
+        neighboring_cells = itertools.product(range(cell.x - 1, cell.x + 2),
+                                              range(cell.y - 1, cell.y + 2))
         for tup in neighboring_cells:
             if tup != (cell.x, cell.y):
                 try:
