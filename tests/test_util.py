@@ -4,7 +4,7 @@ from hersweeper.util import to_number
 
 
 def test_to_number_success():
-    test_samples = {('y', 25), ('aa', 27), ('oui', 10695)}
+    test_samples = {('a', 0), ('y', 24), ('aa', 26), ('oui', 10694)}
     for sample in test_samples:
         assert to_number(sample[0]) == sample[1]
 

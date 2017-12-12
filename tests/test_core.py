@@ -1,16 +1,17 @@
 from hersweeper import core
 
+
 class TestGame:
-    def test_propagate():
+    def test_propagate(self):
         pass
 
-    def test_init():
+    def test_init(self):
         pass
 
 
 class TestGrid:
-    def test_sample():
+    def test_sample(self):
         pass
 
-    def test_neighbor_cells():
+    def test_neighbor_cells(self):
         pass

@@ -23,7 +23,7 @@ class Game:
             cell.is_bomb = True
 
             for cell in self.grid.neighbor_cells(cell):
-                cell.nb += 1
+                cell.value += 1
 
     def __str__(self):
         return (f'Grid: {self.grid.nb_cols}x{self.grid.nb_rows}\n'
@@ -32,7 +32,7 @@ class Game:
     def propagate(self, cell):
         neighbors = self.grid.neighbor_cells(cell)
         for neighbor in neighbors:
-            if neighbor.nb == 0:
+            if neighbor.value == 0:
                 neighbor.is_revealed = True
                 self.propagate(neighbor)
 
@@ -57,7 +57,6 @@ class Grid:
     def __init__(self, nb_cols, nb_rows):
         self.nb_cols = nb_cols
         self.nb_rows = nb_rows
-
         self.__grid = [Row(nb_cols, i) for i in range(nb_rows)]
 
     def __str__(self):
@@ -96,11 +95,11 @@ class Cell:
         self.y = y
         self.is_bomb = is_bomb
         self.is_flagged = is_flagged
-        self.nb = nb_neighbor_bombs
+        self.value = nb_neighbor_bombs
         self.is_revealed = is_revealed
 
     def __str__(self):
         if self.is_flagged:
             return FLAG
         else:
-            return str(self.nb) if self.is_revealed else ' '
+            return str(self.value) if self.is_revealed else ' '
