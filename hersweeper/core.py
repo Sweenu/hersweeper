@@ -2,8 +2,10 @@ import random
 import itertools
 
 import tabulate
-tabulate.PRESERVE_WHITESPACE = True
 
+from util import to_letters
+
+tabulate.PRESERVE_WHITESPACE = True
 EASY = 10
 NORMAL = 20
 HARD = 30
@@ -15,12 +17,15 @@ class Game:
     def __init__(self, grid, bomb_percentage):
         self.grid = grid
         self.bomb_percentage = bomb_percentage
+        self.bombs = []
+        self.revealed_cells = []
 
     def init(self):
         nb_cells = self.grid.nb_cols * self.grid.nb_rows
         nb_bombs = round((nb_cells * self.bomb_percentage) / 100)
         for cell in self.grid.sample(nb_bombs):
             cell.is_bomb = True
+            self.bombs.append(cell)
 
             for cell in self.grid.neighbor_cells(cell):
                 cell.value += 1
@@ -32,9 +37,13 @@ class Game:
     def propagate(self, cell):
         neighbors = self.grid.neighbor_cells(cell)
         for neighbor in neighbors:
-            if neighbor.value == 0:
-                neighbor.is_revealed = True
+            if neighbor.value == 0 and not neighbor.is_revealed:
+                self.reveal(neighbor)
                 self.propagate(neighbor)
+
+    def reveal(self, cell):
+        cell.is_revealed = True
+        self.revealed_cells.append(cell)
 
 
 class Row:
@@ -60,7 +69,16 @@ class Grid:
         self.__grid = [Row(nb_cols, i) for i in range(nb_rows)]
 
     def __str__(self):
-        return tabulate.tabulate(self, tablefmt='fancy_grid')
+        grid = tabulate.tabulate(self, tablefmt='fancy_grid')
+        grid_with_headers = ''
+        turn = 1
+        for i, line in enumerate(grid.split('\n')):
+            if i % 2 != 0:
+                grid_with_headers += f' {to_letters(i - turn)} ' + line + '\n'
+                turn += 1
+            else:
+                grid_with_headers += '   ' + line + '\n'
+        return grid_with_headers
 
     def __getitem__(self, y):
         return self.__grid[y]
@@ -81,7 +99,7 @@ class Grid:
         neighboring_cells = itertools.product(range(cell.x - 1, cell.x + 2),
                                               range(cell.y - 1, cell.y + 2))
         for tup in neighboring_cells:
-            if tup != (cell.x, cell.y):
+            if tup != (cell.x, cell.y) and tup[0] >= 0 and tup[1] >= 0:
                 try:
                     yield self[tup[1]][tup[0]]
                 except IndexError:
@@ -101,5 +119,10 @@ class Cell:
     def __str__(self):
         if self.is_flagged:
             return FLAG
+        elif self.is_revealed:
+            if self.is_bomb:
+                return BOMB
+            else:
+                return str(self.value) if self.value != 0 else ' '
         else:
-            return str(self.value) if self.is_revealed else ' '
+            return ' . '

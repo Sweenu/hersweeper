@@ -1,8 +1,10 @@
-def to_number(letters):
+alphabet = list('abcdefghijklmnopqrstuvwxyz')
+
+
+def to_number(letters: str) -> int:
     if not letters:
         raise ValueError("a letter is needed")
 
-    alphabet = list('abcdefghijklmnopqrstuvwxyz')
     result = -1
     for pos, letter in enumerate(letters):
         try:
@@ -12,3 +14,12 @@ def to_number(letters):
             raise ValueError(f"'{letter}' is not a valid character")
 
     return result
+
+
+def to_letters(nb: int) -> str:
+    word = [] if nb != 0 else ['a']
+    while nb != 0:
+        word.insert(0, alphabet[nb % 26])
+        nb //= 26
+
+    return ''.join(word)

@@ -4,8 +4,8 @@ import os
 
 import click
 
-from .core import Game, Grid
-from .util import to_number
+from core import Game, Grid
+from util import to_number
 
 EASY = 10
 NORMAL = 20
@@ -49,23 +49,40 @@ class CommandLine:
         print(help)
 
     def run(self):
+        # TODO: clean this mess
+        print(self.game.grid, end='\n\n')
+        print("What's your next move? (h for help)")
+        nb_cell_total = self.game.grid.nb_cols * self.game.grid.nb_rows
+
         while True:
-            print(self.game.grid)
-            print("What's your next move? (h for help)")
             user_input = input(self.prompt)
             if user_input in ('h', 'help'):
                 self.print_help()
+                continue
             elif user_input in ('quit', 'exit'):
                 os.exit(0)
             else:
                 try:
                     x, y = self._process_input(user_input)
                     cell = self.game.grid[x][y]
-                    if cell.value == 0:
-                        self.game.propagate(cell)
-                    self.game.grid[x][y].is_revealed = True
                 except ValueError as e:
                     print(e.args[0])
+                    continue
+
+                if cell.is_bomb:
+                    for bomb in self.game.bombs:
+                        self.game.reveal(bomb)
+                    return False
+                elif cell.value == 0:
+                    self.game.propagate(cell)
+
+                self.game.reveal(self.game.grid[x][y])
+                nb_revealed_cells = len(self.game.revealed_cells)
+                if len(self.game.bombs) + nb_revealed_cells == nb_cell_total:
+                    return True
+
+            print(self.game.grid, end='\n\n')
+            print("What's your next move? (h for help)")
 
 
 @click.command()
@@ -78,7 +95,12 @@ def main(graphic):
         game = CommandLine()
 
     game.setup_game()
-    game.run()
+    has_win = game.run()
+    print(game.game.grid, end='\n\n')
+    if has_win:
+        print('You won!')
+    else:
+        print('Meh, you could have done better...')
 
 
 if __name__ == '__main__':
