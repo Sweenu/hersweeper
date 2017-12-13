@@ -1,6 +1,6 @@
 import pytest
 
-from hersweeper.util import to_number, to_letters
+from hersweeper.utils import to_number, to_letters
 
 test_samples = {('a', 0), ('y', 24), ('aa', 26), ('oui', 10694)}
 

@@ -3,7 +3,7 @@ import itertools
 
 import tabulate
 
-from util import to_letters
+from .utils import to_letters
 
 tabulate.PRESERVE_WHITESPACE = True
 EASY = 10
@@ -70,7 +70,11 @@ class Grid:
 
     def __str__(self):
         grid = tabulate.tabulate(self, tablefmt='fancy_grid')
-        grid_with_headers = ''
+        grid_with_headers = '   '
+        for i in range(self.nb_cols):
+            grid_with_headers += f'   {i + 1}  '
+
+        grid_with_headers += '\n'
         turn = 1
         for i, line in enumerate(grid.split('\n')):
             if i % 2 != 0:

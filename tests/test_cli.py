@@ -1,6 +1,6 @@
-from hersweeper import hersweeper
+from hersweeper.cli import *
 
-test_game = hersweeper.CommandLine()
+test_game = CommandLine()
 
 
 class TestCommandLine:

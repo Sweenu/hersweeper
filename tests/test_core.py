@@ -1,4 +1,4 @@
-from hersweeper import core
+from hersweeper.core import *
 
 
 class TestGame:

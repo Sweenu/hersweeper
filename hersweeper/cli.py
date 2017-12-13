@@ -1,11 +1,10 @@
-#!/usr/bin/env python
 import re
 import os
 
 import click
 
-from core import Game, Grid
-from util import to_number
+from .core import Game, Grid
+from .utils import to_number
 
 EASY = 10
 NORMAL = 20
@@ -102,6 +101,4 @@ def main(graphic):
     else:
         print('Meh, you could have done better...')
 
-
-if __name__ == '__main__':
-    main()
+    return 0
