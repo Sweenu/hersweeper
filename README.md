@@ -21,3 +21,6 @@ To run the whole test suite (well, it's like 2 tests ^^):
 - finish implementing the flag system
 - a graphical interface based on ncurses
 - write more tests (many more)
+
+### Issues
+- problem with test_utils.py
