@@ -13,40 +13,31 @@ BOMB = u'\U0001F4A3'
 FLAG = u'\u2691'
 
 
-class Game:
-    def __init__(self, grid, bomb_percentage):
-        self.grid = grid
-        self.bomb_percentage = bomb_percentage
-        self.bombs = []
-        self.revealed_cells = []
-
-    def init(self):
-        nb_cells = self.grid.nb_cols * self.grid.nb_rows
-        nb_bombs = round((nb_cells * self.bomb_percentage) / 100)
-        for cell in self.grid.sample(nb_bombs):
-            cell.is_bomb = True
-            self.bombs.append(cell)
-
-            for cell in self.grid.neighbor_cells(cell):
-                cell.value += 1
+class Cell:
+    def __init__(self, x, y, nb_neighbor_bombs=0,
+                 is_bomb=False, is_flagged=False, is_revealed=False):
+        self.x = x
+        self.y = y
+        self.is_bomb = is_bomb
+        self.is_flagged = is_flagged
+        self.value = nb_neighbor_bombs
+        self.is_revealed = is_revealed
 
     def __str__(self):
-        return (f'Grid: {self.grid.nb_cols}x{self.grid.nb_rows}\n'
-                f'Bomb percentage: {self.bomb_percentatge}')
-
-    def propagate(self, cell):
-        neighbors = self.grid.neighbor_cells(cell)
-        for neighbor in neighbors:
-            if neighbor.value == 0 and not neighbor.is_revealed:
-                self.reveal(neighbor)
-                self.propagate(neighbor)
-
-    def reveal(self, cell):
-        cell.is_revealed = True
-        self.revealed_cells.append(cell)
+        if self.is_flagged:
+            return FLAG
+        elif self.is_revealed:
+            if self.is_bomb:
+                return BOMB
+            else:
+                return str(self.value) if self.value != 0 else ' '
+        else:
+            return ' . '
 
 
 class Row:
+    """A list containing 'nb_cols' Cells."""
+
     def __init__(self, nb_cols, row_nb):
         self.__row = [Cell(x=i, y=row_nb) for i in range(nb_cols)]
 
@@ -63,7 +54,9 @@ class Row:
 
 
 class Grid:
-    def __init__(self, nb_cols, nb_rows):
+    """A list containing 'nb_rows' Rows."""
+
+    def __init__(self, nb_cols: int, nb_rows: int):
         self.nb_cols = nb_cols
         self.nb_rows = nb_rows
         self.__grid = [Row(nb_cols, i) for i in range(nb_rows)]
@@ -110,23 +103,45 @@ class Grid:
                     pass
 
 
-class Cell:
-    def __init__(self, x, y, nb_neighbor_bombs=0,
-                 is_bomb=False, is_flagged=False, is_revealed=False):
-        self.x = x
-        self.y = y
-        self.is_bomb = is_bomb
-        self.is_flagged = is_flagged
-        self.value = nb_neighbor_bombs
-        self.is_revealed = is_revealed
+class Game:
+    def __init__(self, grid: Grid, bomb_percentage: int):
+        self.grid = grid
+        self.bomb_percentage = bomb_percentage
+        self.bombs = []
+        self.revealed_cells = []
+
+    def init(self):
+        """Initalize the game's grid.
+
+        Randomly spread bombs across the grid according to the chosen bomb
+        percentage. Change the value of each cell accordingly.
+        """
+        nb_cells = self.grid.nb_cols * self.grid.nb_rows
+        nb_bombs = round((nb_cells * self.bomb_percentage) / 100)
+        for cell in self.grid.sample(nb_bombs):
+            cell.is_bomb = True
+            self.bombs.append(cell)
+
+            for cell in self.grid.neighbor_cells(cell):
+                cell.value += 1
 
     def __str__(self):
-        if self.is_flagged:
-            return FLAG
-        elif self.is_revealed:
-            if self.is_bomb:
-                return BOMB
-            else:
-                return str(self.value) if self.value != 0 else ' '
-        else:
-            return ' . '
+        return (f'Grid: {self.grid.nb_cols}x{self.grid.nb_rows}\n'
+                f'Bomb percentage: {self.bomb_percentatge}')
+
+    def propagate(self, cell: Cell):
+        """Reveal cells neighboring the given cells.
+
+        If a reaveled cell has a value of 0, propagate from this cell as well.
+        """
+        neighbors = self.grid.neighbor_cells(cell)
+        for neighbor in neighbors:
+            if not neighbor.is_revealed:
+                self.reveal(neighbor)
+                if neighbor.value == 0:
+                    self.propagate(neighbor)
+
+    def reveal(self, cell: Cell):
+        """Reveal a cell and puts it in the revealed_cells list."""
+        cell.is_revealed = True
+        self.revealed_cells.append(cell)

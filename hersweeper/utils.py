@@ -3,7 +3,7 @@ alphabet = list('abcdefghijklmnopqrstuvwxyz')
 
 def to_number(letters: str) -> int:
     if not letters:
-        raise ValueError("a letter is needed")
+        raise ValueError("A letter is expected")
 
     result = -1
     for pos, letter in enumerate(letters):

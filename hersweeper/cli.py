@@ -1,5 +1,5 @@
 import re
-import os
+import sys
 
 import click
 
@@ -36,6 +36,9 @@ class CommandLine:
     def _process_input(move):
         raw_x = ''.join([char for char in move if char.isalpha()])
         raw_y = ''.join([char for char in move if char.isdigit()])
+        if not raw_y:
+            raise ValueError("A number is expected")
+
         return to_number(raw_x), int(raw_y) - 1
 
     def print_help(self):
@@ -48,7 +51,7 @@ class CommandLine:
         print(help)
 
     def run(self):
-        # TODO: clean this mess
+        # TODO: clean up this mess
         print(self.game.grid, end='\n\n')
         print("What's your next move? (h for help)")
         nb_cell_total = self.game.grid.nb_cols * self.game.grid.nb_rows
@@ -59,7 +62,7 @@ class CommandLine:
                 self.print_help()
                 continue
             elif user_input in ('quit', 'exit'):
-                os.exit(0)
+                sys.exit()
             else:
                 try:
                     x, y = self._process_input(user_input)
@@ -78,6 +81,12 @@ class CommandLine:
                 self.game.reveal(self.game.grid[x][y])
                 nb_revealed_cells = len(self.game.revealed_cells)
                 if len(self.game.bombs) + nb_revealed_cells == nb_cell_total:
+                    for row in self.game.grid:
+                        for cell in row:
+                            cell.is_revealed = True
+                            if cell.is_bomb:
+                                cell.is_flagged = True
+
                     return True
 
             print(self.game.grid, end='\n\n')
